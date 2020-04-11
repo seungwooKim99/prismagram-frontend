@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import Input from "../Components/Input";
-import Button from "../Components/Button";
+import Input from "../../Components/Input";
+import Button from "../../Components/Button";
 
 const Wrapper = styled.div`
     min-height: 80vh;
@@ -46,32 +46,36 @@ const Form = styled(Box)`
     }
 `;
 
-export default () => {
-
-    const [action, setAction] = useState("login");
+export default ({
+    action,
+    username,
+    firstName,
+    lastName,
+    email,
+    setAction,
+    onSubmit
+}) => {
 
     return (
         <Wrapper>
             <Form>
-                {action === "login" ? (
-                    <form>
-                        <Input placeholder={"Username"} />
-                        <Input placeholder={"Password"} />
+                {action === "logIn" ? (
+                    <form onSubmit={onSubmit}>
+                        <Input placeholder={"Email"} {...email} type="email" />
                         <Button text={"Log in"} />
                     </form>
                 ) : (
-                        <form>
-                            <Input placeholder={"First name"} />
-                            <Input placeholder={"Last name"} />
-                            <Input placeholder={"Email"} />
-                            <Input placeholder={"Username"} />
-                            <Input placeholder={"Password"} />
+                        <form onSubmit={onSubmit}>
+                            <Input placeholder={"First name"} {...firstName} />
+                            <Input placeholder={"Last name"} {...lastName} />
+                            <Input placeholder={"Email"} {...email} type="email" />
+                            <Input placeholder={"Username"} {...username} />
                             <Button text={"Log in"} />
                         </form>
                     )}
             </Form>
             <StateChanger>
-                {action === "login" ? (
+                {action === "logIn" ? (
                     <>
                         Don't have an account?{" "}
                         <Link onClick={() => setAction("signUp")}>Sign up</Link>
@@ -79,7 +83,7 @@ export default () => {
                 ) : (
                         <>
                             Have an account?{" "}
-                            <Link onClick={() => setAction("login")}>Log in</Link>
+                            <Link onClick={() => setAction("logIn")}>Log in</Link>
                         </>
                     )}
             </StateChanger>
