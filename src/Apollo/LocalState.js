@@ -11,6 +11,7 @@ export const resolvers = {
                     isLoggedIn: true
                 }
             });
+            console.log(`token is : ${token}`);
             return null;
         },
         logUserOut: (_, __, { cache }) => {
