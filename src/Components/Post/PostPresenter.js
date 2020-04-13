@@ -2,13 +2,15 @@ import React from "react";
 import styled from "styled-components";
 import FatText from "../FatText";
 import Avatar from "../Avatar";
-import { HeartFull, HeartEmpty, Comment } from "../Icons";
+import { HeartFull, HeartEmpty, Comment as CommentIcon } from "../Icons";
+import TextareaAutosize from 'react-autosize-textarea';
 
 const Post = styled.div`
     ${props => props.theme.whiteBox}
     width: 100%;
     max-width:600px;
     margin-bottom: 25px;
+    user-select: none;
 `;
 
 const Header = styled.header`
@@ -28,11 +30,25 @@ const Location = styled.span`
 `;
 
 const Files = styled.div`
-
+    position: relative;
+    padding-bottom: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex-shrink: 0;
 `;
 
 const File = styled.img`
     max-width: 100%;
+    width: 100%;
+    height: 600px;
+    position: absolute;
+    top: 0;
+    background-image: url(${props => props.src});
+    background-size: cover;
+    background-position: center;
+    opacity: ${props => (props.showing ? 1 : 0)};
+    transition: opacity 0.5s linear;
 `;
 
 const Button = styled.span`
@@ -63,32 +79,78 @@ const Timestamp = styled.span`
     border-bottom: ${props => props.theme.lightGreyColor} 1px solid;
 `;
 
-export default ({ user: { username, avatar }, location, files, isLiked, likeCount, createdAt }) => (
-    <Post>
-        <Header>
-            <Avatar size="sm" url={avatar} />
-            <UserColumn>
-                <FatText text={username} />
-                <Location>{location}</Location>
+const Textarea = styled(TextareaAutosize)`
+    width: 100%;
+    border: none;
+    resize: none;
+    font-size: 14px;
+    &:focus{
+        outline: none;
+    }
+`;
 
-            </UserColumn>
-        </Header>
-        <Files>
-            {files && files.map(file => <File key={file.id} src={file.url} />)}
-        </Files>
-        <Meta>
-            <Buttons>
-                <Button>
-                    {isLiked ? <HeartFull /> : <HeartEmpty />}
-                </Button>
-                <Button>
-                    <Comment />
-                </Button>
-            </Buttons>
-            <FatText text={likeCount === 1 ? "1 like" : `${likeCount} like`} />
-            <Timestamp>
-                {createdAt}
-            </Timestamp>
-        </Meta>
-    </Post >
-);
+const Comments = styled.ul`
+    margin-top: 10px;
+`;
+
+const Comment = styled.li`
+    margin-bottom: 7px;
+    span {
+        margin-right: 5px;
+    }
+`;
+
+export default (
+    { user: { username, avatar },
+        location,
+        files,
+        isLiked,
+        likeCount,
+        createdAt,
+        newComment,
+        currentItem,
+        toggleLike,
+        onKeyPress,
+        comments
+    }) => (
+        <Post>
+            <Header>
+                <Avatar size="sm" url={avatar} />
+                <UserColumn>
+                    <FatText text={username} />
+                    <Location>{location}</Location>
+
+                </UserColumn>
+            </Header>
+            <Files>
+                {files && files.map((file, index) => <File key={file.id} src={file.url} showing={index === currentItem} />)}
+            </Files>
+            <Meta>
+                <Buttons>
+                    <Button onClick={toggleLike}>
+                        {isLiked ? <HeartFull /> : <HeartEmpty />}
+                    </Button>
+                    <Button>
+                        <CommentIcon />
+                    </Button>
+                </Buttons>
+                <FatText text={likeCount === 1 ? "1 like" : `${likeCount} like`} />
+                {comments && (
+                    <Comments>
+                        {comments.map(comment => (
+                            <Comment key={comment.id}>
+                                <FatText text={comment.user.username} />
+                                {comment.text}
+                            </Comment>
+                        ))}
+                    </Comments>
+                )}
+                <Timestamp>
+                    {createdAt}
+                </Timestamp>
+                <form>
+                    <Textarea placeholder="Add a comment..." value={newComment.value} onChange={newComment.onChange} onKeyUp={onKeyPress} />
+                </form>
+            </Meta>
+        </Post >
+    );
