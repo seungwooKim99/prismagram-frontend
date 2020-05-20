@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import useInput from "../../Hooks/useInput";
 import PostPresenter from "./PostPresenter";
-import { useMutation, useQuery } from "react-apollo-hooks";
+import { useMutation } from "react-apollo-hooks";
 import { TOGGLE_LIKE, ADD_COMMENT } from "./PostQueries";
-import { ME } from "../../sharedQueries";
 import { toast } from "react-toastify";
 
 const PostContainer = ({
@@ -23,7 +22,7 @@ const PostContainer = ({
     const [currentItem, setCurrentItem] = useState(0);
     const [selfComments, setSelfComments] = useState([]);
     const comment = useInput("");
-    const { data: meQuery, loading } = useQuery(ME);
+    //const { data: meQuery, loading } = useQuery(ME);
     const [toggleLikeMutation] = useMutation(TOGGLE_LIKE, {
         variables: { postId: id }
     });
@@ -31,22 +30,22 @@ const PostContainer = ({
         variables: { postId: id, text: comment.value }
     });
 
-    const slide = () => {
+
+    useEffect(() => {
         const totalFiles = files.length;
+        let timer = null;
         if (currentItem === totalFiles - 1) {
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 setCurrentItem(0)
             }, 3000);
         }
         else {
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 setCurrentItem(currentItem + 1)
             }, 3000);
         }
-    };
-    useEffect(() => {
-        slide();
-    }, [currentItem]);
+        return () => clearTimeout(timer);
+    }, [currentItem, files]);
 
     const toggleLike = async () => {
         toggleLikeMutation();

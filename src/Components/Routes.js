@@ -1,11 +1,11 @@
-import { Route, Switch, Router } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import React from "react";
 import PropTypes from "prop-types";
 import Auth from "../Routes/Auth";
 import Feed from "../Routes/Feed";
 import Explore from "../Routes/Explore";
 import index from "../Routes/Search/index";
-import Profile from "../Routes/Profile";
+import Profile from "../Routes/Profile/index";
 
 
 const LoggedInRoutes = () => (
